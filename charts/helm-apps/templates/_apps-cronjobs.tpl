@@ -15,6 +15,7 @@
 {{- if not .containers }}
 {{- fail (printf "Установлено значение enabled для не настроенной '%s' в %s джобы!" $.CurrentApp.name "apps-cronjobs") }}
 {{- end }}
+{{- $serviceAccount := include "apps-system.serviceAccount" $ }}
 {{- if semverCompare ">=1.21-0" $.Capabilities.KubeVersion.GitVersion }}
 apiVersion: batch/v1
 {{- else }}
@@ -33,6 +34,8 @@ spec:
 {{- include "apps-components.generateConfigMapsAndSecrets" $ -}}
 
 {{- include "apps-components.verticalPodAutoscaler" (list $ . .verticalPodAutoscaler "CronJob") -}}
+
+{{ $serviceAccount -}}
 
 {{- end }}
 {{- end }}
