@@ -28,7 +28,7 @@ spec:
 {{-   include "apps-utils.leaveScope" $ }}
 {{- end }}
 
-{{- define "apps-components.cerificate" }}
+{{- define "apps-components.certificate" }}
 {{-   $ := index . 0 }}
 {{-   $RelatedScope := index . 1 }}
 {{- with $RelatedScope }}

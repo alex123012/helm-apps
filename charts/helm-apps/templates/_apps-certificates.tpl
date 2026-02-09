@@ -10,6 +10,6 @@
 {{- define "apps-certificates.render" }}
 {{- $ := . }}
 {{- with $.CurrentApp }}
-{{ include "apps-components.cerificate" (list $ .) }}
+{{ include "apps-components.certificate" (list $ .) }}
 {{- end }}
 {{- end }}
