@@ -2278,7 +2278,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: "test-app-ingress"
-  annotations: 
+  annotations:
   labels:
     app: "test-app-ingress"
     chart: "tests"
@@ -2442,7 +2442,7 @@ metadata:
     chart: "tests"
     repo: ""
 spec:
-  query: "sum(rate(sidekiq_jobs_enqueued_total{<<.LabelMatchers>>, queue=\"default\"}[1m])) by (<<.GroupBy>>)"
+  query: 'sum(rate(sidekiq_jobs_enqueued_total{<<.LabelMatchers>>, queue="default"}[1m])) by (<<.GroupBy>>)'
 ---
 # Source: test_render.yaml
 # Helm Apps Library: apps-stateless.app-1.horizontalPodAutoscaler.metric-1
@@ -2457,7 +2457,7 @@ metadata:
     chart: "tests"
     repo: ""
 spec:
-  query: "sum(rate(sidekiq_jobs_enqueued_total{<<.LabelMatchers>>, queue=\"default\"}[1m])) by (<<.GroupBy>>)"
+  query: 'sum(rate(sidekiq_jobs_enqueued_total{<<.LabelMatchers>>, queue="default"}[1m])) by (<<.GroupBy>>)'
 ---
 # Helm Apps Library: ingress-with-dexAuth.ingress-dex-auth.tls
 apiVersion: cert-manager.io/v1
@@ -2508,8 +2508,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: custom-certificate-1
-  annotations: {}
-  labels: {}
+  annotations:
 spec:
   secretName: custom-certificate-1
   issuerRef:
@@ -2527,8 +2526,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: custom-issuer-1
-  annotations: {}
-  labels: {}
+  annotations:
 spec:
   secretName: custom-issuer-1
   issuerRef:
@@ -2548,7 +2546,7 @@ metadata:
     component: rules
     prometheus: main
   name: test-rule
-  annotations: {}
+  annotations:
 spec:
   groups:
     - name: test-group
@@ -2608,7 +2606,7 @@ metadata:
     chart: "tests"
     repo: ""
 spec:
-  query: "round(sum by(<<.GroupBy>>) (phpfpm_processes_total{state=\"active\",<<.LabelMatchers>>}) / sum by(<<.GroupBy>>) (phpfpm_processes_total{<<.LabelMatchers>>}) * 100)"
+  query: 'round(sum by(<<.GroupBy>>) (phpfpm_processes_total{state="active",<<.LabelMatchers>>}) / sum by(<<.GroupBy>>) (phpfpm_processes_total{<<.LabelMatchers>>}) * 100)'
 ---
 # Helm Apps Library: apps-stateless-deckhouse-metrics.app-with-deckhouse-metrics.verticalPodAutoscaler
 apiVersion: autoscaling.k8s.io/v1
