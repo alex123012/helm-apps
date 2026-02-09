@@ -52,7 +52,7 @@ spec:
 ---
 {{- include "apps-utils.enterScope" (list $ "tls") }}
 {{- include "apps-utils.printPath" $ }}
-{{- include "apps-components.cerificate" (list $ .) }}
+{{- include "apps-components.certificate" (list $ .) }}
 {{- include "apps-utils.leaveScope" $ }}
 {{- end -}}
 

@@ -1,15 +1,15 @@
-{{- define "apps-certificates" }}
+{{- define "apps-endpoints" }}
   {{- $ := index . 0 }}
   {{- $RelatedScope := index . 1 }}
     {{- if not (kindIs "invalid" $RelatedScope) }}
-  {{- $_ := set $RelatedScope "__GroupVars__" (dict "type" "apps-certificates" "name" "apps-certificates") }}
+  {{- $_ := set $RelatedScope "__GroupVars__" (dict "type" "apps-endpoints" "name" "apps-endpoints") }}
   {{- include "apps-utils.renderApps" (list $ $RelatedScope) }}
 {{- end -}}
 {{- end -}}
 
-{{- define "apps-certificates.render" }}
+{{- define "apps-endpoints.render" }}
 {{- $ := . }}
 {{- with $.CurrentApp }}
-{{ include "apps-components.certificate" (list $ .) }}
+{{- include "apps-components._endpoint" (list $ .) }}
 {{- end }}
 {{- end }}

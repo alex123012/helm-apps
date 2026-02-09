@@ -12,6 +12,7 @@
 apiVersion: v1
 kind: ServiceAccount
 {{- include "apps-helpers.metadataGenerator" (list $ .) }}
+
 {{- if hasKey . "clusterRole" }}
 {{- include "apps-utils.enterScope" (list $ "clusterRole") }}
 {{- $roleName := include "apps-utils.requiredValue" (list $ .clusterRole "name") }}
@@ -28,6 +29,30 @@ kind: ClusterRoleBinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
+  name:  {{ $roleName }}
+subjects:
+- kind: ServiceAccount
+  name: {{ $serviceAccountName }}
+  namespace: {{ $.Values.werf.namespace }}
+{{- include "apps-utils.leaveScope" $ }}
+{{- end }}
+
+{{- if hasKey . "role" }}
+{{- include "apps-utils.enterScope" (list $ "role") }}
+{{- $roleName := include "apps-utils.requiredValue" (list $ .role "name") }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+{{- include "apps-helpers.metadataGenerator" (list $ .role) }}
+rules:
+{{- include "apps-utils.requiredValue" (list $ .role "rules") | nindent 2 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+{{- include "apps-helpers.metadataGenerator" (list $ .role) }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
   name:  {{ $roleName }}
 subjects:
 - kind: ServiceAccount
