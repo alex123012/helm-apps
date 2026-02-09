@@ -49,8 +49,9 @@ jobs:
         run: |
           set -e
           source $(werf ci-env github --as-file)
-          cd tests && werf render --dev --set "global._includes.apps-defaults.enabled=true" --env=prod | sed '/werf.io\//d' > test_render_check.yaml
-          dyff between --ignore-order-changes --ignore-whitespace-changes --omit-header --set-exit-code test_render.yaml tes test_render.yaml test_render_check.yaml
+          cd tests
+          werf render --dev --set "global._includes.apps-defaults.enabled=true" --env=prod | sed '/werf.io\//d' > test_render_check.yaml
+          dyff between --ignore-order-changes --ignore-whitespace-changes --omit-header --set-exit-code test_render.yaml test_render_check.yaml
 
       - name: Run chart-releaser
         if: ${{ github.ref == 'refs/heads/main' }}
