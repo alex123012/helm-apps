@@ -2278,7 +2278,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: "test-app-ingress"
-  annotations: {}
+  annotations: 
   labels:
     app: "test-app-ingress"
     chart: "tests"
@@ -2464,8 +2464,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ingress-dex-auth
-  annotations: {}
-  labels: {}
+  annotations:
 spec:
   secretName: ingress-dex-auth
   issuerRef:
@@ -2479,8 +2478,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: ingress-3
-  annotations: {}
-  labels: {}
+  annotations:
 spec:
   secretName: ingress-3
   issuerRef:
@@ -2494,8 +2492,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: nginx
-  annotations: {}
-  labels: {}
+  annotations:
 spec:
   secretName: nginx
   issuerRef:
