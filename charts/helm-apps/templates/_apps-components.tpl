@@ -125,6 +125,11 @@ spec:
   {{- $_ = set $specs "Numbers" (list "healthCheckNodePort") }}
   {{- $_ = set $specs "Maps" (list "sessionAffinityConfig" "selector") }}
   {{- include "apps-utils.generateSpecs" (list $ $RelatedScope $specs) | nindent 2 }}
+
+{{- include "apps-components.endpointslice" (list $ $RelatedScope $RelatedScope.endpointSlice) }}
+
+{{- include "apps-components.endpoint" (list $ $RelatedScope $RelatedScope.endpoint) }}
+
 {{- end }}
 
 
@@ -315,4 +320,66 @@ data: {{ include "fl.generateSecretEnvVars" (list $ . .secretEnvVars) | trim | n
 {{- $configFile.content | toYaml }}
 {{-         end }}
 {{- end }}
+{{- end }}
+
+{{- define "apps-components.endpointslice" }}
+{{-   $ := index . 0 }}
+{{-   $RelatedScope := index . 1 }}
+{{-   $endpointslice := index . 2 }}
+{{-   if $endpointslice }}
+{{-     if include "fl.isTrue" (list $ . $endpointslice.enabled) }}
+{{-       if not (hasKey $endpointslice "serviceName") }}
+{{-         $_ := set $endpointslice "serviceName" $.CurrentApp.name }}
+{{-       end }}
+{{-       if not (contains ($endpointslice.labels | toString) "kubernetes.io/service-name") }}
+{{-         $_ := set $endpointslice "labels" ( printf "%s\nkubernetes.io/service-name: %s" ($endpointslice.labels | default "") $endpointslice.serviceName ) }}
+{{-       end }}
+{{-       include "apps-utils.enterScope" (list $ "endpointslice") }}
+---
+{{-       include "apps-components._endpointslice" (list $ $endpointslice) }}
+{{-       include "apps-utils.leaveScope" $ }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+
+{{- define "apps-components._endpointslice" }}
+{{-   $ := index . 0 }}
+{{-   $RelatedScope := index . 1 }}
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+{{- include "apps-helpers.metadataGenerator" (list $ $RelatedScope) }}
+{{- $specs := dict }}
+{{- $_ := set $specs "Required" (list "ports" "endpoints" "addressType" "serviceName") }}
+{{- $_ := set $specs "Lists" (list "ports" "endpoints") }}
+{{- $_ := set $specs "Strings" (list "addressType") }}
+{{- include "apps-utils.generateSpecs" (list $ $RelatedScope $specs) }}
+{{- end }}
+
+{{- define "apps-components.endpoint" }}
+{{-   $ := index . 0 }}
+{{-   $RelatedScope := index . 1 }}
+{{-   $endpoint := index . 2 }}
+{{-   if $endpoint }}
+{{-     if include "fl.isTrue" (list $ . $endpoint.enabled) }}
+{{-       include "apps-utils.enterScope" (list $ "endpoint") }}
+---
+{{-       include "apps-components._endpoint" (list $ $endpoint) }}
+{{-       include "apps-utils.leaveScope" $ }}
+{{-     end }}
+{{-   end }}
+{{- end }}
+
+{{- define "apps-components._endpoint" }}
+{{-   $ := index . 0 }}
+{{-   $RelatedScope := index . 1 }}
+---
+apiVersion: v1
+kind: Endpoints
+{{- include "apps-helpers.metadataGenerator" (list $ $RelatedScope) }}
+{{- $specs := dict }}
+{{- $_ := set $specs "Required" (list "ports" "addresses") }}
+{{- $_ := set $specs "Lists" (list "ports" "addresses") }}
+subsets:
+  {{- include "apps-utils.generateSpecs" (list $ $RelatedScope $specs) | fromYaml | list | toYaml | nindent 2 }}
 {{- end }}

@@ -223,6 +223,8 @@
 "pvcs"
 "certificates"
 "services"
+"endpointslices"
+"endpoints"
 }}
 {{-     range $app := $Library }}
 {{-         include (printf "apps-%s" $app) (list $ (index $.Values (printf "apps-%s" $app))) }}
