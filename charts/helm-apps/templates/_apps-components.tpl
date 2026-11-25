@@ -186,6 +186,22 @@ spec:
 {{-   include "apps-utils.leaveScope" $ }}
 {{- end }}
 
+{{- define "apps-components.workloadResources" }}
+{{- range $field, $renderer := dict "httpRoutes" "apps-components.httpRoute" "externalSecrets" "apps-components.externalSecret" }}
+{{- range $name, $resource := index $.CurrentApp $field }}
+{{- $scope := merge (dict) $resource (dict "name" $name) }}
+{{- if include "fl.isTrue" (list $ $scope $scope.enabled) }}
+{{- include "apps-utils.enterScope" (list $ $field) }}
+{{- include "apps-utils.enterScope" (list $ $name) }}
+{{- include "apps-utils.printPath" $ }}
+{{- include $renderer (list $ $scope) }}
+{{- include "apps-utils.leaveScope" $ }}
+{{- include "apps-utils.leaveScope" $ }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- define "apps-components.generateConfigMapsAndSecrets" }}
 {{-   $ := . }}
 {{- /* Loop through containers to generate ConfigMaps and Secrets */ -}}

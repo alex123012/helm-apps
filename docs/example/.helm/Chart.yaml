@@ -3,5 +3,5 @@ name: app
 version: 1.0.0
 dependencies:
 - name: helm-apps
-  version: ~1
+  version: "1.4.0"
   repository: "@helm-apps"

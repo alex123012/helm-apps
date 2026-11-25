@@ -225,6 +225,8 @@
 "services"
 "endpointslices"
 "endpoints"
+"httproutes"
+"externalsecrets"
 }}
 {{-     range $app := $Library }}
 {{-         include (printf "apps-%s" $app) (list $ (index $.Values (printf "apps-%s" $app))) }}

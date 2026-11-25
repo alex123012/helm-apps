@@ -41,6 +41,8 @@ spec:
 {{- $_ = unset . "__annotations__" }}
 {{- include "apps-components.generateConfigMapsAndSecrets" $ -}}
 
+{{- include "apps-components.workloadResources" $ -}}
+
 {{- include "apps-components.service" (list $ . .service) -}}
 
 {{- include "apps-components.podDisruptionBudget" (list $ . .podDisruptionBudget) -}}

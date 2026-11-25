@@ -20,24 +20,24 @@
 #### Вручную:
 * Добавить в .gitlab-ci.yml строку подключения библиотеки общих чартов
   ```bash
-     werf helm repo add --force-update  helm-apps https://flant.github.io/helm-apps
+     werf helm repo add --force-update  helm-apps https://alex123012.github.io/helm-apps
   ```
   + к примеру так:
     ```yaml
     before_script:
     - type trdl && source $(trdl use werf ${WERF_VERSION:-1.2 ea})
     - type werf && source $(werf ci-env gitlab --as-file)
-    - werf helm repo add --force-update  helm-apps https://flant.github.io/helm-apps
+    - werf helm repo add --force-update  helm-apps https://alex123012.github.io/helm-apps
     ```
     у себя на компьютере добавляем репозиторий helm-apps:
     ```yaml
-    werf helm repo add --force-update  helm-apps https://flant.github.io/helm-apps
+    werf helm repo add --force-update  helm-apps https://alex123012.github.io/helm-apps
     ```
     и обновляем зависимости:
     ```yaml
     werf helm dependency update .helm
     ```
-* Добавить в папку .helm/templates файл [init-helm-apps.yaml](tests/.helm/templates/init-helm-apps.yaml) для инициализаци библиотеки, содержимое файла:
+* Добавить в папку .helm/templates файл [init-helm-apps.yaml](tests/.helm/templates/init-helm-apps-library.yaml) для инициализаци библиотеки, содержимое файла:
   ```yaml
     {{- /* Подключаем библиотеку */}}
     {{- include "apps-utils.init-library" $ }}
@@ -49,7 +49,7 @@
   version: 1.0.0
   dependencies:
   - name: helm-apps
-    version: ~1
+    version: "1.4.0"
     repository: "@helm-apps"
   ```
 * В [values.yaml](docs/example/.helm/values.yaml) отредактировать секцию global._includes с параметрами по умолчанию для хелперов.

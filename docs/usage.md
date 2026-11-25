@@ -69,3 +69,71 @@
     ```
 * Логика отделена от конфигурации: вся логика находится в шаблонах хелпера ([пример](../charts/helm-apps/templates/)), вся конфигурация по умолчанию находится в `values.yaml` в секции global._includes, а вся актуальная конфигурация приложения находится в `.helm/values.yaml` в репозитории приложения. В репозитории приложения обычно шаблонов быть не должно(кроме шаблона подключения библиотеки), только конфигурация в `.helm/values.yaml` и `.helm/secret-values.yaml`.
 * Дублирование конфигурации минимизировано за счет специального хелпера, реализующего более мощную альтернативу YAML-алисам. Подробнее смотрите в файлах `values.yaml` .
+
+## HTTPRoute и ExternalSecret
+
+Внутри `apps-stateless`, `apps-stateful`, `apps-jobs` и `apps-cronjobs` у приложения могут быть словари `httpRoutes` и `externalSecrets`. Добавьте их рядом с `containers`. Ключ записи задаёт имя ресурса в namespace, поле `name` позволяет его переопределить. При выключении приложения его вложенные ресурсы тоже выключаются. В шаблонах `$.CurrentApp` указывает на приложение. Например, этот фрагмент добавляет маршрут к уже описанному Service и доставку секрета для приложения `images`:
+
+```yaml
+apps-stateless:
+  images:
+    httpRoutes:
+      images-public:
+        enabled: true
+        parentRefs: |
+          - name: public
+            namespace: gateways
+            sectionName: https-images
+        rules: |
+          - backendRefs:
+              - name: {{ $.CurrentApp.service.name }}
+                port: 10110
+    externalSecrets:
+      signing-key:
+        enabled: true
+        secretStoreRef: |
+          kind: SecretStore
+          name: openbao
+        dataFrom: |
+          - extract:
+              key: {{ printf "%s/signing-key" $.Release.Namespace | quote }}
+```
+
+Контейнер читает созданный оператором Secret через обычный `secretKeyRef`, `envFrom` или том. При описании общего для нескольких приложений ресурса используйте верхнеуровневую группу. Ключ записи задаёт имя ресурса. Включите нужные записи через `enabled: true`. Поля спецификации задаются рядом с `enabled`. Для списков и словарей используйте YAML в многострочной строке, как в остальных хелперах. В кластере должны быть установлены соответствующие CRD.
+
+```yaml
+apps-httproutes:
+  images:
+    enabled: true
+    parentRefs: |
+      - name: public
+        namespace: gateways
+        sectionName: https-images
+    hostnames: |
+      - images.example.org
+    rules: |
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: images
+            port: 10110
+
+apps-externalsecrets:
+  signing-key:
+    enabled: true
+    refreshPolicy: Periodic
+    refreshInterval: 15s
+    secretStoreRef: |
+      kind: SecretStore
+      name: openbao
+    target: |
+      name: signing-key
+      creationPolicy: Owner
+    data: |
+      - secretKey: security_key
+        remoteRef:
+          key: {{ printf "%s/signing-key" $.Release.Namespace | quote }}
+          property: security_key
+```

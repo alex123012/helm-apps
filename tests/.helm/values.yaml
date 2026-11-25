@@ -1017,6 +1017,27 @@ apps-stateful:
 apps-stateless:
   ## Имя первого приложения. Используется в основном для генерации имён ресурсов.
   app-1:
+    httpRoutes:
+      public-route:
+        name: '{{ $.CurrentApp.name }}-public'
+        enabled: true
+        parentRefs: |
+          - name: public
+        rules: |
+          - backendRefs:
+              - name: {{ $.CurrentApp.name }}
+                port: 8080
+      disabled-route:
+        enabled: false
+    externalSecrets:
+      worker-key:
+        enabled: true
+        secretStoreRef: |
+          name: openbao
+          kind: SecretStore
+        dataFrom: |
+          - extract:
+              key: {{ $.CurrentApp.name }}/worker
     _include: ["apps-stateless-defaultApp"]
     # werfWeight задает порядок выкатки приложений добавляя аннотацию werf.io/weight: "NUM"
     # аннотация добавляется на все автоматически связанные с приложением ресурсы
@@ -1989,3 +2010,40 @@ test-env-yaml:
                     prod: 3v
                   test3:
                     _default: 2v
+
+apps-httproutes:
+  images:
+    enabled: true
+    parentRefs: |
+      - name: public
+        namespace: gateways
+        sectionName: https-images
+    hostnames: |
+      - images.example.org
+    rules: |
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: images
+            port: 10110
+
+apps-externalsecrets:
+  signing-key:
+    enabled: true
+    refreshPolicy: Periodic
+    refreshInterval: 15s
+    secretStoreRef: |
+      kind: SecretStore
+      name: openbao
+    target: |
+      name: signing-key
+      creationPolicy: Owner
+    data: |
+      - secretKey: security_key
+        remoteRef:
+          key: {{ printf "images-%s/signing-key" $.Values.global.env | quote }}
+          property: security_key
+  disabled-secret:
+    enabled: false

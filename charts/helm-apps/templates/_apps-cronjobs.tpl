@@ -33,6 +33,8 @@ spec:
 
 {{- include "apps-components.generateConfigMapsAndSecrets" $ -}}
 
+{{- include "apps-components.workloadResources" $ -}}
+
 {{- include "apps-components.verticalPodAutoscaler" (list $ . .verticalPodAutoscaler "CronJob") -}}
 
 {{ $serviceAccount -}}
